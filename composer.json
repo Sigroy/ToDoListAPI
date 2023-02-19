@@ -1,0 +1,15 @@
+{
+    "name": "sigfredo/to-do-list-api",
+    "autoload": {
+        "psr-4": {
+            "ToDoListApi\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Sigroy",
+            "email": "sigfredoolmedo6c17@gmail.com"
+        }
+    ],
+    "require": {}
+}
