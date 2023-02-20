@@ -11,5 +11,8 @@
             "email": "sigfredoolmedo6c17@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "ext-pdo": "*",
+        "vlucas/phpdotenv": "^5.5"
+    }
 }
