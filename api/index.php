@@ -1,13 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require dirname(__DIR__) . '/vendor/autoload.php';
-
-set_error_handler("\ToDoListApi\ErrorHandler::handleError");
-set_exception_handler("\ToDoListApi\ErrorHandler::handleException");
-
-$dotenv = \Dotenv\Dotenv::createImmutable(dirname(__DIR__));
-$dotenv->load();
+require __DIR__ . '/bootstrap.php';
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
@@ -23,9 +17,13 @@ if ($resource != 'tasks') {
     exit;
 }
 
-header("Content-Type: application/json; charset=UTF-8");
-
 $database = new \ToDoListApi\Database($_ENV['DB_HOST'], $_ENV['DB_NAME'], $_ENV['DB_USER'], $_ENV['DB_PASS']);
+
+$user_gateway = new \ToDoListApi\UserGateway($database);
+
+$auth = new \ToDoListApi\Auth($user_gateway);
+
+if (!$auth->authenticateAPIKey()) exit;
 
 $task_gateway = new \ToDoListApi\TaskGateway($database);
 
