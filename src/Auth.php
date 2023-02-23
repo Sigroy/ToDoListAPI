@@ -2,11 +2,9 @@
 
 namespace ToDoListApi;
 
-use http\Client\Curl\User;
-
 class Auth
 {
-    public function __construct(private UserGateway $user_gateway)
+    public function __construct(private readonly UserGateway $user_gateway)
     {
 
     }
