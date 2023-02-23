@@ -2,15 +2,40 @@
 
 namespace ToDoListApi;
 
+use PDO;
+
+/**
+ * Class UserGateway
+ *
+ * A gateway for retrieving user data from a database.
+ */
 class UserGateway
 {
-    private \PDO $conn;
+    /**
+     * The PDO database connection instance.
+     *
+     * @var PDO
+     */
+    private PDO $conn;
 
+    /**
+     * UserGateway constructor.
+     *
+     * @param Database $database The database instance to use for the connection.
+     */
     public function __construct(Database $database)
     {
         $this->conn = $database->getConnection();
     }
 
+    /**
+     * Get a user record by their API key.
+     *
+     * @param string $key The API key to search for.
+     *
+     * @return array|false Returns an array of user data if a matching record was found,
+     *                     or false if no matching record was found.
+     */
     public function getByAPIKey(string $key): array|false
     {
         $sql = "SELECT *

@@ -32,8 +32,8 @@ $user_gateway = new \ToDoListApi\UserGateway($database);
 // Create instance of the authentication class using the user gateway
 $auth = new \ToDoListApi\Auth($user_gateway);
 
-// With the auth class, authenticate that there is a use in the db with the api key sent in X-API-KEY request header
-// If there is not, or if the X-API-KEY request here is empty, exit the script.
+// With the auth class, authenticate that there is a user in the db with the api key sent in the X-API-KEY request header
+// If there is not, or if the X-API-KEY request is empty, exit the script.
 if (!$auth->authenticateAPIKey()) exit;
 
 // Create a gateway to query the task table with the database

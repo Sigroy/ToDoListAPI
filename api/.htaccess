@@ -1,5 +1,12 @@
+# This line enables the URL rewriting engine in Apache. This allows you to rewrite or redirect URLs based on certain conditions.
 RewriteEngine On
+# This line checks if the requested URL does not match an existing file on the server.
+# If the requested URL does match an existing file, the subsequent RewriteRule will not be executed.
 RewriteCond %{REQUEST_FILENAME} !-f
+# This line checks if the requested URL does not match an existing directory on the server.
 RewriteCond %{REQUEST_FILENAME} !-d
+# This line checks if the requested URL does not match an existing symbolic link on the server.
 RewriteCond %{REQUEST_FILENAME} !-l
+# If all of the above conditions are true, rewrite the URL to point to index.php and stop processing other rules.
+# The . in the pattern matches any character, so this rule will match any URL.
 RewriteRule . index.php [L]
