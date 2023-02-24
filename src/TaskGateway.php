@@ -33,12 +33,14 @@ class TaskGateway
      *
      * @return array Returns an array with all the task records, or an empty array if there are no records
      */
-    public function getAll(): array
+    public function getAllForUser(int $user_id): array
     {
         $sql = "SELECT *
                 FROM task
+                WHERE user_id = :user_id
                 ORDER BY name";
-        $statement = $this->conn->query($sql);
+        $statement = $this->conn->prepare($sql);
+        $statement->execute([$user_id]);
         $data = [];
 
         // While fetching the rows, typecast the is_completed column to boolean
@@ -55,13 +57,15 @@ class TaskGateway
      * @param string $id The id to fetch in the database
      * @return array|false Returns an array with the data of the task, or false if there wasn't a match found
      */
-    public function get(string $id): array|false
+    public function getForUser(int $user_id, string $id): array|false
     {
         $sql = "SELECT *
                 FROM task
-                WHERE id = :id";
+                WHERE user_id = :user_id
+                AND id = :id";
         $statement = $this->conn->prepare($sql);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
+        $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
         $statement->execute();
         $data = $statement->fetch(PDO::FETCH_ASSOC);
         // If there is a match, typecast the is_completed column to boolean
@@ -77,12 +81,12 @@ class TaskGateway
      * @param array $data The task data to be inserted
      * @return string Returns a string id representing the row ID of the last row that was inserted into the database.
      */
-    public function create(array $data): string
+    public function createForUser(int $user_id, array $data): string
     {
-        $sql = "INSERT INTO task (name, priority, is_completed)
-                VALUES (:name, :priority, :is_completed)";
+        $sql = "INSERT INTO task (name, priority, is_completed, user_id)
+                VALUES (:name, :priority, :is_completed, :user_id)";
         $statement = $this->conn->prepare($sql);
-        $statement->execute([$data['name'], empty($data['priority']) ? NULL : $data['priority'], $data['is_completed'] ?? false]);
+        $statement->execute([$data['name'], empty($data['priority']) ? NULL : $data['priority'], $data['is_completed'] ?? false, $user_id]);
 
         return $this->conn->lastInsertId();
     }
@@ -93,7 +97,7 @@ class TaskGateway
      * @param array $data The data to update
      * @return int Returns the number of changed rows
      */
-    public function update(string $id, array $data): int
+    public function updateForUser(int $user_id, string $id, array $data): int
     {
         // Create an empty array to store the sent data
         $fields = [];
@@ -132,10 +136,12 @@ class TaskGateway
             // "SET name = :name, priority = :priority
             $sql = "UPDATE task"
                 . " SET " . implode(", ", $sets)
-                . " WHERE id = :id";
+                . " WHERE id = :id"
+                . " AND user_id = :user_id";
 
             // Add an id key to the fields array with the passed id value
             $fields['id'] = $id;
+            $fields['user_id'] = $user_id;
             // Prepare and execute the SQL statement with the values in the fields array
             $statement = $this->conn->prepare($sql);
             $statement->execute($fields);
@@ -150,12 +156,13 @@ class TaskGateway
      * @param string $id The id of the record to delete
      * @return int Returns the number of changed rows
      */
-    public function delete(string $id): int
+    public function deleteForUser(int $user_id, string $id): int
     {
         $sql = "DELETE FROM task
-                WHERE id = :id";
+                WHERE id = :id
+                AND user_id = :user_id";
         $statement = $this->conn->prepare($sql);
-        $statement->execute([$id]);
+        $statement->execute(['id' => $id, 'user_id' => $user_id]);
         return $statement->rowCount();
     }
 }
