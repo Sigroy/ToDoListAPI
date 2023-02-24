@@ -7,6 +7,8 @@ use PDOException;
 
 class Database
 {
+    private ?PDO $conn = null;
+
     /**
      * Represents a database object with the specified database credentials.
      * @param string $host The database host name or IP address.
@@ -26,17 +28,18 @@ class Database
      */
     public function getConnection(): PDO
     {
-        // The database DSN
-        $dsn = "mysql:host={$this->host};dbname={$this->name};charset=utf8;port=3307";
+        if ($this->conn === null) {
+            // The database DSN
+            $dsn = "mysql:host={$this->host};dbname={$this->name};charset=utf8;port=3307";
 
-        // Create a new PDO instance with error handling options.
-        $pdo = new PDO($dsn, $this->user, $this->password, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_EMULATE_PREPARES => false,
-            PDO::ATTR_STRINGIFY_FETCHES => false,
-        ]);
-
+            // Create a new PDO instance with error handling options.
+            $this->conn = new PDO($dsn, $this->user, $this->password, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::ATTR_STRINGIFY_FETCHES => false,
+            ]);
+        }
         // Return the PDO instance
-        return $pdo;
+        return $this->conn;
     }
 }
