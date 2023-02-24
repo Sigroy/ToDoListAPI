@@ -36,11 +36,14 @@ $auth = new \ToDoListApi\Auth($user_gateway);
 // If there is not, or if the X-API-KEY request is empty, exit the script.
 if (!$auth->authenticateAPIKey()) exit;
 
+// Get user id if authentication passes
+$user_id = $auth->getUserID();
+
 // Create a gateway to query the task table with the database
 $task_gateway = new \ToDoListApi\TaskGateway($database);
 
-// Create an instance of the controller of tasks using the task gateway
-$controller = new \ToDoListApi\TaskController($task_gateway);
+// Create an instance of the controller of tasks using the task gateway and user id
+$controller = new \ToDoListApi\TaskController($task_gateway, $user_id);
 
 // Process the request according depending on the action (request method) and if and id was provided in the URL
 $controller->processRequest($_SERVER['REQUEST_METHOD'], $id);
