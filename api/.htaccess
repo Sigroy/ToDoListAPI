@@ -10,3 +10,5 @@ RewriteCond %{REQUEST_FILENAME} !-l
 # If all of the above conditions are true, rewrite the URL to point to index.php and stop processing other rules.
 # The . in the pattern matches any character, so this rule will match any URL.
 RewriteRule . index.php [L]
+
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
