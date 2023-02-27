@@ -45,4 +45,14 @@ class UserGateway
         $statement->execute([$key]);
         return $statement->fetch();
     }
+
+    public function getByUsername(string $username): array|false
+    {
+        $sql = "SELECT *
+                FROM user
+                WHERE username = :username";
+        $statement = $this->conn->prepare($sql);
+        $statement->execute([$username]);
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
 }
