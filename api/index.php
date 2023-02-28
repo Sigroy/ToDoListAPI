@@ -29,8 +29,10 @@ $database = new \ToDoListApi\Database($_ENV['DB_HOST'], $_ENV['DB_NAME'], $_ENV[
 // Create a gateway to query the user table with the database
 $user_gateway = new \ToDoListApi\UserGateway($database);
 
+$codec = new \ToDoListApi\JWTCodec($_ENV["SECRET_KEY"]);
+
 // Create instance of the authentication class using the user gateway
-$auth = new \ToDoListApi\Auth($user_gateway);
+$auth = new \ToDoListApi\Auth($user_gateway, $codec);
 
 // With the auth class, authenticate that there is a user in the db with the api key sent in the X-API-KEY request header
 // If there is not, or if the X-API-KEY request is empty, exit the script.
