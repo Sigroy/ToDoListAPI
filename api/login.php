@@ -38,10 +38,13 @@ if (!$password = password_verify($data['password'], $user['password_hash'])) {
 }
 
 $payload = [
-  "id" => $user["id"],
-  "name" => $user["name"]
+    "sub" => $user["id"],
+    "name" => $user["name"]
 ];
 
-$access_token = base64_encode(json_encode($payload));
+$codec = new \ToDoListApi\JWTCodec($_ENV["SECRET_KEY"]);
+$access_token = $codec->encode($payload);
+
+//$access_token = base64_encode(json_encode($payload));
 
 echo json_encode(["access_token" => $access_token]);
