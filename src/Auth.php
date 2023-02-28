@@ -16,7 +16,7 @@ readonly class Auth
      *
      * @param UserGateway $user_gateway The gateway to the user table to query the database
      */
-    public function __construct(private UserGateway $user_gateway)
+    public function __construct(private UserGateway $user_gateway, private JWTCodec $codec)
     {
 
     }
@@ -69,23 +69,20 @@ readonly class Auth
             return false;
         }
 
-        $plain_text = base64_decode($matches[1], true);
-
-        if ($plain_text === false) {
+        try {
+            $data = $this->codec->decode($matches[1]);
+        } catch (InvalidSignatureException) {
+            http_response_code(401);
+            echo json_encode(["message" => "Invalid signature"]);
+            return false;
+        } catch (\Exception $e) {
             http_response_code(400);
-            echo json_encode(["message" => "Invalid authorization header"]);
+            echo json_encode(["message" => $e->getMessage()]);
             return false;
         }
 
-        $data = json_decode($plain_text, true);
 
-        if ($data === null) {
-            http_response_code(400);
-            echo json_encode(["message" => "Invalid JSON"]);
-            return false;
-        }
-
-        $this->user_id = $data['id'];
+        $this->user_id = $data['sub'];
 
         return true;
     }
