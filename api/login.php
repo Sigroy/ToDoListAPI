@@ -37,14 +37,10 @@ if (!$password = password_verify($data['password'], $user['password_hash'])) {
     exit;
 }
 
-$payload = [
-    "sub" => $user["id"],
-    "name" => $user["name"]
-];
-
 $codec = new \ToDoListApi\JWTCodec($_ENV["SECRET_KEY"]);
-$access_token = $codec->encode($payload);
 
-//$access_token = base64_encode(json_encode($payload));
+require __DIR__ . "/tokens.php";
 
-echo json_encode(["access_token" => $access_token]);
+$refresh_token_gateway = new \ToDoListApi\RefreshTokenGateway($database, $_ENV["SECRET_KEY"]);
+
+$refresh_token_gateway->create($refresh_token, $refresh_token_expiry);
